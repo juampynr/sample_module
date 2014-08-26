@@ -9,11 +9,22 @@
  * Set default value of 0 for field_flag on existing content.
  */
 function mymodule_update_7100() {
+  // We need to revert the feature compenents first, to be sure the field exists
+  // so that data can be saved to it.
+  $items['mymodule'] = array('field_base', 'field_instance');
+  features_revert($items);
+
   // Load up all Basic Page nodes.
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
     ->entityCondition('bundle', 'page');
   $results = $query->execute();
+
+  // Make sure that the field exists.
+  if (empty(field_info_instance('node', 'field_flag', 'page'))) {
+    $t_args = array('@function' => __FUNCTION__);
+    throw new DrupalUpdateException(t('Field flag was not found in update @function.', $t_args));
+  }
 
   // Loop over each page node and set field_flag to 0.
   foreach (node_load_multiple(array_keys($results['node'])) as $node) {
