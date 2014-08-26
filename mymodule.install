@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ *
+ * Install hook implementations for module  mymodule.
+ */
+
+/**
+ * Set default value of 0 for field_flag on existing content.
+ */
+function mymodule_update_7100() {
+  // Load up all Basic Page nodes.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'page');
+  $results = $query->execute();
+
+  // Loop over each page node and set field_flag to 0.
+  foreach (node_load_multiple(array_keys($results['node'])) as $node) {
+    $node->field_flag[LANGUAGE_NONE][0]['value'] = 0;
+    node_save($node);
+  }
+}
