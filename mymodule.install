@@ -8,9 +8,8 @@
 /**
  * Set default value of 0 for field_flag on existing content.
  */
-function mymodule_update_7100() {
-  // We need to revert the feature compenents first, to be sure the field exists
-  // so that data can be saved to it.
+function mymodule_update_7100(&$sandbox) {
+  // Before we manipulate the field we have to revert the feature.
   $items['mymodule'] = array('field_base', 'field_instance');
   features_revert($items);
 
